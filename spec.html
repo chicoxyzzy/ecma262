@@ -5800,7 +5800,7 @@
   <!-- es6num="8.2" -->
   <emu-clause id="sec-code-realms">
     <h1>Code Realms</h1>
-    <p>Before it is evaluated, all ECMAScript code must be associated with a <dfn>Realm</dfn>. Conceptually, a realm consists of a set of intrinsic objects, an ECMAScript global environment, all of the ECMAScript code that is loaded within the scope of that global environment, and other associated state and resources.</p>
+    <p>Before it is evaluated, all ECMAScript code must be associated with a <dfn id="realm">Realm</dfn>. Conceptually, a realm consists of a set of intrinsic objects, an ECMAScript global environment, all of the ECMAScript code that is loaded within the scope of that global environment, and other associated state and resources.</p>
     <p>A Realm is specified as a Record with the fields specified in <emu-xref href="#table-21"></emu-xref>:</p>
     <emu-table id="table-21" caption="Realm Record Fields">
       <table>
@@ -6222,6 +6222,8 @@
         1. Add _pending_ at the back of the Job Queue named by _queueName_.
         1. Return NormalCompletion(~empty~).
       </emu-alg>
+
+      <emu-note>For host environments consisting of multiple continents, when those host environments enqueue their own jobs, they should generally specify which continent's job queues they are enqueuing on.</emu-note>
     </emu-clause>
 
     <!-- es6num="8.4.2" -->
@@ -6252,20 +6254,36 @@
     </emu-clause>
   </emu-clause>
 
+  <emu-clause id="sec-continents">
+    <h1>Continents</h1>
+
+    <p>A <dfn id="continent">continent</dfn> is an independent unit of ECMAScript computation, and is the largest unit that this specification deals with. Everything within this specification is assumed to occur within a single continent.</p>
+
+    <p>The host environment must create a continent prior to the execution of any Jobs or the evaluation of any ECMAScript code.</p>
+
+    <p>A continent may contain multiple realms, as defined in <emu-xref href="#sec-code-realms"></emu-xref>. Each realm belongs to exactly one continent. Depending on the host environment, code executed within a given continent's realms may or may not be able to reach objects from other realms in that continent. However, code executed in one continent must not be able to directly reference or share objects from another continent.</p>
+
+    <p>Each continent contains a set of job queues, as defined in <emu-xref href="#sec-jobs-and-job-queues"></emu-xref>.</p>
+
+    <emu-note>Typically, a continent is implemented as a single thread of execution. For example, in a web browser, each unit of related similar-origin browsing contexts consists of a single continent, as does each worker.</emu-note>
+  </emu-clause>
+
   <!-- es6num="8.5" -->
-  <emu-clause id="sec-ecmascript-initialization" aoid="Initialization">
-    <h1>ECMAScript Initialization()</h1>
-    <p>An ECMAScript implementation performs the following steps prior to the execution of any Jobs or the evaluation of any ECMAScript code:</p>
+  <emu-clause id="sec-initializehostdefinedrealm" aoid="InitializeHostDefinedRealm">
+    <h1>InitializeHostDefinedRealm( _global_, _thisValue_ )</h1>
+    <p>The abstract operation InitializeHostDefinedRealm takes optional arguments _global_ and _thisValue_. It performs the following steps:</p>
+
     <emu-alg>
       1. Let _realm_ be CreateRealm().
       1. Let _newContext_ be a new execution context.
       1. Set the Function of _newContext_ to *null*.
       1. Set the Realm of _newContext_ to _realm_.
       1. Push _newContext_ onto the execution context stack; _newContext_ is now the running execution context.
-      1. Let _status_ be InitializeHostDefinedRealm(_realm_).
-      1. If _status_ is an abrupt completion, then
-        1. Assert: The first realm could not be created.
-        1. Terminate ECMAScript execution.
+      1. If the _global_ argument was not passed, let _global_ be *undefined*, indicating that an ordinary object should be created as the global object.
+      1. If the _thisValue_ argument was not passed, let _thisValue_ be *undefined*, indicating that _realm_'s global `this` binding should be the global object.
+      1. Perform SetRealmGlobalObject(_realm_, _global_, _thisValue_).
+      1. Let _globalObj_ be ? SetDefaultGlobalBindings(_realm_).
+      1. Create any implementation defined global object properties on _globalObj_.
       1. In an implementation dependent manner, obtain the ECMAScript source texts (see clause <emu-xref href="#sec-ecmascript-language-source-code"></emu-xref>) for zero or more ECMAScript scripts and/or ECMAScript modules. For each such _sourceText_ do,
         1. If _sourceText_ is the source code of a script, then
           1. Perform EnqueueJob(`"ScriptJobs"`, ScriptEvaluationJob, &laquo; _sourceText_ &raquo;).
@@ -6274,19 +6292,9 @@
       1. NextJob NormalCompletion(*undefined*).
     </emu-alg>
 
-    <!-- es6num="8.5.1" -->
-    <emu-clause id="sec-initializehostdefinedrealm" aoid="InitializeHostDefinedRealm">
-      <h1>InitializeHostDefinedRealm ( _realm_ )</h1>
-      <p>The abstract operation InitializeHostDefinedRealm with parameter _realm_ performs the following steps:</p>
-      <emu-alg>
-        1. If this implementation requires use of an exotic object to serve as _realm_'s global object, let _global_ be such an object created in an implementation defined manner. Otherwise, let _global_ be *undefined* indicating that an ordinary object should be created as the global object.
-        1. If this implementation requires a specific value for the _realm_'s global `this` binding, let _thisValue_ be that value. Otherwise, let _thisValue_ be *undefined* indicating that the global object should be used.
-        1. Perform SetRealmGlobalObject(_realm_, _global_, _thisValue_).
-        1. Let _globalObj_ be ? SetDefaultGlobalBindings(_realm_).
-        1. Create any implementation defined global object properties on _globalObj_.
-        1. Return NormalCompletion(*undefined*).
-      </emu-alg>
-    </emu-clause>
+    <emu-note>
+      Host environments are expected to first create a continent, and then create new host-defined realms within it using this abstract operation.
+    </emu-note>
   </emu-clause>
 </emu-clause>
 
