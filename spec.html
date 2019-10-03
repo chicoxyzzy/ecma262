@@ -26501,7 +26501,7 @@
       <p>When an ECMAScript implementation detects a runtime error, it throws a new instance of one of the _NativeError_ objects defined in <emu-xref href="#sec-native-error-types-used-in-this-standard"></emu-xref>. Each of these objects has the structure described below, differing only in the name used as the constructor name instead of _NativeError_, in the `name` property of the prototype object, and in the implementation-defined `message` property of the prototype object.</p>
       <p>For each error object, references to _NativeError_ in the definition should be replaced with the appropriate error object name from <emu-xref href="#sec-native-error-types-used-in-this-standard"></emu-xref>.</p>
 
-      <emu-clause id="sec-nativeerror-constructors">
+      <emu-clause id="sec-nativeerror-constructor">
         <h1>The _NativeError_ Constructors</h1>
         <p>Each _NativeError_ constructor:</p>
         <ul>
@@ -26525,7 +26525,7 @@
         </emu-clause>
       </emu-clause>
 
-      <emu-clause id="sec-properties-of-the-nativeerror-constructors">
+      <emu-clause id="sec-properties-of-the-nativeerror-constructor">
         <h1>Properties of the _NativeError_ Constructors</h1>
         <p>Each _NativeError_ constructor:</p>
         <ul>
@@ -26552,7 +26552,7 @@
 
         <emu-clause id="sec-nativeerror.prototype.constructor">
           <h1>_NativeError_.prototype.constructor</h1>
-          <p>The initial value of the `constructor` property of the prototype for a given _NativeError_ constructor is the corresponding intrinsic object %_NativeError_% (<emu-xref href="#sec-nativeerror-constructors"></emu-xref>).</p>
+          <p>The initial value of the `constructor` property of the prototype for a given _NativeError_ constructor is the corresponding intrinsic object %_NativeError_% (<emu-xref href="#sec-nativeerror-constructor"></emu-xref>).</p>
         </emu-clause>
 
         <emu-clause id="sec-nativeerror.prototype.message">
@@ -42857,7 +42857,7 @@ THH:mm:ss.sss
   <p><emu-xref href="#sec-object.seal"></emu-xref>: In ECMAScript 2015, if the argument to `Object.seal` is not an object it is treated as if it was a non-extensible ordinary object with no own properties. In the previous edition, a non-object argument always causes a *TypeError* to be thrown.</p>
   <p><emu-xref href="#sec-function.prototype.bind"></emu-xref>: In ECMAScript 2015, the [[Prototype]] internal slot of a bound function is set to the [[GetPrototypeOf]] value of its target function. In the previous edition, [[Prototype]] was always set to %Function.prototype%.</p>
   <p><emu-xref href="#sec-function-instances-length"></emu-xref>: In ECMAScript 2015, the `"length"` property of function instances is configurable. In previous editions it was non-configurable.</p>
-  <p><emu-xref href="#sec-properties-of-the-nativeerror-constructors"></emu-xref>: In ECMAScript 2015, the [[Prototype]] internal slot of a _NativeError_ constructor is the Error constructor. In previous editions it was the Function prototype object.</p>
+  <p><emu-xref href="#sec-properties-of-the-nativeerror-constructor"></emu-xref>: In ECMAScript 2015, the [[Prototype]] internal slot of a _NativeError_ constructor is the Error constructor. In previous editions it was the Function prototype object.</p>
   <p><emu-xref href="#sec-properties-of-the-date-prototype-object"></emu-xref> In ECMAScript 2015, the Date prototype object is not a Date instance. In previous editions it was a Date instance whose TimeValue was *NaN*.</p>
   <p><emu-xref href="#sec-string.prototype.localecompare"></emu-xref> In ECMAScript 2015, the `String.prototype.localeCompare` function must treat Strings that are canonically equivalent according to the Unicode standard as being identical. In previous editions implementations were permitted to ignore canonical equivalence and could instead use a bit-wise comparison.</p>
   <p><emu-xref href="#sec-string.prototype.tolowercase"></emu-xref> and <emu-xref href="#sec-string.prototype.touppercase"></emu-xref> In ECMAScript 2015, lowercase/upper conversion processing operates on code points. In previous editions such the conversion processing was only applied to individual code units. The only affected code points are those in the Deseret block of Unicode.</p>
